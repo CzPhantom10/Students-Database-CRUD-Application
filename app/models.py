@@ -1,12 +1,8 @@
-"""
-Pydantic schemas for request validation and response serialization.
-"""
 import re
 from datetime import date
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-# Standard basic email regex: avoids requiring external email-validator package
 EMAIL_REGEX = re.compile(r"^[\w\.-]+@[\w\.-]+\.\w+$")
 
 
@@ -34,7 +30,6 @@ class StudentBase(BaseModel):
     @field_validator("dob")
     @classmethod
     def validate_dob_format(cls, v: str) -> str:
-        # Validate YYYY-MM-DD
         try:
             date.fromisoformat(v.strip())
         except ValueError:

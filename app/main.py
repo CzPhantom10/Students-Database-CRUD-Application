@@ -1,6 +1,3 @@
-"""
-Main FastAPI Application for Student Database CRUD Application.
-"""
 import uuid
 from contextlib import asynccontextmanager
 from typing import List, Optional
@@ -30,22 +27,17 @@ from app.models import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: ensure SQLite database and tables exist
     init_db()
     yield
 
 
 app = FastAPI(
     title="Students Database CRUD API",
-    description=(
-        "FastAPI backend application for managing student records with SQLite persistent storage "
-        "and an optional local Ollama AI extension for natural-language queries."
-    ),
+    description="FastAPI backend application for managing student records with SQLite persistent storage and an optional AI extension.",
     version="1.0.0",
     lifespan=lifespan
 )
 
-# CORS middleware for frontend / client accessibility
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -85,10 +77,8 @@ def health_check():
     summary="Create a new student record"
 )
 def create_student(payload: StudentCreate):
-    # Auto-generate student_id if not supplied by client
     student_id = payload.student_id or f"STU-{uuid.uuid4().hex[:6].upper()}"
 
-    # Check if student_id already exists to prevent duplicates
     if get_student_by_id(student_id):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

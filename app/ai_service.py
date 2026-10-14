@@ -1,9 +1,3 @@
-"""
-AI Integration Service for Student Database.
-Supports:
-1. g4f (GPT-for-free): Zero local installation / no API key required.
-2. Ollama: Local LLM runner (llama3.2:1b) as specified in assignment.
-"""
 import json
 import os
 import urllib.error
@@ -14,7 +8,6 @@ OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
 
 def build_system_prompt(records: List[Dict[str, Any]]) -> str:
-    """Builds grounded context prompt with sanitized student data."""
     return (
         "You are an assistant for a student management system. "
         "Answer the user's question directly and concisely based strictly on the student database context provided below. "
@@ -25,9 +18,6 @@ def build_system_prompt(records: List[Dict[str, Any]]) -> str:
 
 
 def query_g4f(question: str, records: List[Dict[str, Any]], model: str = "auto") -> Dict[str, Any]:
-    """
-    Queries free LLMs via g4f library (no API key, no local Ollama setup needed).
-    """
     try:
         from g4f.client import Client
         client = Client()
@@ -61,11 +51,6 @@ def query_g4f(question: str, records: List[Dict[str, Any]], model: str = "auto")
 
 
 def query_ollama(question: str, records: List[Dict[str, Any]], model: str = "llama3.2:1b") -> Dict[str, Any]:
-    """
-    Sends question and grounded student records to local Ollama instance.
-    Security: The AI model NEVER executes SQL queries. Database records are fetched
-    exclusively by backend code and supplied as read-only context.
-    """
     system_prompt = build_system_prompt(records)
     target_model = model if model and model != "auto" else "llama3.2:1b"
 
@@ -118,12 +103,6 @@ def query_ai(
     provider: str = "g4f",
     model: str = "auto"
 ) -> Dict[str, Any]:
-    """
-    Routes AI query to selected provider:
-    - 'g4f': Free cloud LLM (no local installation or API key needed).
-    - 'ollama': Local Ollama model (e.g. llama3.2:1b).
-    - 'auto': Attempts g4f first, falls back to Ollama if needed.
-    """
     prov = (provider or "g4f").lower().strip()
 
     if prov == "ollama":
@@ -131,7 +110,6 @@ def query_ai(
     elif prov == "g4f":
         return query_g4f(question, records, model=model)
     else:
-        # Default / auto: Try g4f, fall back to Ollama
         res = query_g4f(question, records, model=model)
         if res.get("status") == "success":
             return res

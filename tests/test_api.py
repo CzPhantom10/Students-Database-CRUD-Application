@@ -1,19 +1,16 @@
-"""
-Automated unit and integration tests for FastAPI Student CRUD operations.
-"""
 import os
 import tempfile
+from unittest.mock import patch
 import pytest
 from fastapi.testclient import TestClient
 
-# Set isolated temporary database for test suite
 temp_db = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
 temp_db_path = temp_db.name
 temp_db.close()
 os.environ["DATABASE_PATH"] = temp_db_path
 
-from app.database import init_db  # noqa: E402
-from app.main import app          # noqa: E402
+from app.database import init_db
+from app.main import app
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -97,10 +94,9 @@ def test_create_duplicate_student_id(client):
 
 
 def test_create_student_validation_error(client):
-    # Missing required name and invalid email
     payload = {
         "email": "invalid-email-format",
-        "phone": "123"  # too short
+        "phone": "123"
     }
     response = client.post("/students", json=payload)
     assert response.status_code == 422
@@ -161,7 +157,6 @@ def test_update_student_put(client):
     data = response.json()
     assert data["name"] == "Alice Wonder Updated"
     assert data["course"] == "Artificial Intelligence"
-    # Unchanged fields should retain original value
     assert data["email"] == "alice@example.com"
 
 
@@ -184,7 +179,6 @@ def test_delete_student(client):
     assert response.status_code == 200
     assert "successfully deleted" in response.json()["message"]
 
-    # Verify it is gone
     get_res = client.get("/students/TEST-101")
     assert get_res.status_code == 404
 
@@ -207,8 +201,6 @@ def test_ai_query_offline_graceful_handling(client):
     assert data["status"] in ["ollama_offline", "success", "error"]
     assert "context_records_count" in data
 
-
-from unittest.mock import patch
 
 def test_ai_query_g4f_handling(client):
     with patch("app.main.query_ai") as mock_query:

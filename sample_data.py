@@ -1,6 +1,3 @@
-"""
-Seed script to populate dummy student records into the SQLite database for testing and demonstration.
-"""
 from app.database import init_db, insert_student, get_student_by_id
 
 SAMPLE_STUDENTS = [
