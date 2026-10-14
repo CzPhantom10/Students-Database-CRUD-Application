@@ -1,12 +1,9 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
 *.so
 
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -24,28 +21,23 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environments
 venv/
 .venv/
 env/
 ENV/
 
-# Database files
 *.db
 *.sqlite
 *.sqlite3
 data/*.db
 
-# IDE and Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Environment variables
 .env
 
-# Pytest / coverage
 .pytest_cache/
 .coverage
 htmlcov/

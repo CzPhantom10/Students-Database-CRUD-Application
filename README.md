@@ -3,22 +3,22 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.116+-009688.svg)](https://fastapi.tiangolo.com/)
 [![SQLite](https://img.shields.io/badge/SQLite-3-003B57.svg)](https://www.sqlite.org/)
-[![Tests](https://img.shields.io/badge/Tests-18%20Passing-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-19%20Passing-success.svg)]()
 
 > **EWB Edu Tech Pvt. Ltd. — Internship Project Assignment (Python Backend Development)**  
 > Built with clean architecture, zero-bloat standard library SQLite persistence, robust input validation, and an optional local Ollama LLM integration for grounded natural language queries.
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 This backend application provides a complete RESTful API to manage student records using Create, Read, Update, and Delete (**CRUD**) operations. Data is persistently stored in an **SQLite** database (`data/students.db`), and interactive API documentation is automatically provided via **Swagger UI** and **ReDoc**.
 
-An optional **Ollama AI extension** connects to a local LLM (e.g., `llama3.2:1b`) to answer natural language questions (such as *"How many students are in Data Science?"* or *"List students born after 2004"*). To ensure security, the LLM is **never allowed to execute unrestricted SQL**; instead, sanitized records are retrieved by backend code and provided as grounded read-only context.
+An optional **AI extension** supports both **g4f** (free cloud LLM, zero setup) and local **Ollama** (e.g., `llama3.2:1b`) to answer natural language questions (such as *"How many students are in Data Science?"* or *"List students born after 2004"*). To ensure security, the LLM is **never allowed to execute unrestricted SQL**; instead, sanitized records are retrieved by backend code and provided as grounded read-only context.
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Language:** Python 3.10+
 - **Framework:** FastAPI
@@ -26,11 +26,11 @@ An optional **Ollama AI extension** connects to a local LLM (e.g., `llama3.2:1b`
 - **Database:** SQLite3 (Python Standard Library with WAL mode & Row Factory)
 - **Validation & Serialization:** Pydantic V2
 - **Testing:** Pytest & HTTPX (TestClient)
-- **Local AI (Bonus):** Ollama (`llama3.2:1b` via standard library HTTP client)
+- **AI Extension:** g4f (free cloud LLM) & Ollama (`llama3.2:1b`)
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 EWB Project 2/
@@ -38,13 +38,13 @@ EWB Project 2/
 │   ├── __init__.py         # Package initialization
 │   ├── database.py         # SQLite connection manager, table migrations, and queries
 │   ├── models.py           # Pydantic schemas, regex validators, request/response models
-│   ├── ai_service.py       # Ollama integration with grounded context & offline fallback
+│   ├── ai_service.py       # g4f and Ollama integration with grounded context & offline fallback
 │   └── main.py             # FastAPI routing, lifespan setup, and error handlers
 ├── data/
 │   └── students.db         # Persistent SQLite database file (created on launch)
 ├── tests/
 │   ├── __init__.py
-│   └── test_api.py         # Comprehensive test suite (18 automated tests)
+│   └── test_api.py         # Comprehensive test suite (19 automated tests)
 ├── sample_data.py          # Seeding script to populate realistic student records
 ├── requirements.txt        # Production & testing dependencies
 ├── .gitignore              # Ignores caches, virtual envs, and database files
@@ -53,7 +53,7 @@ EWB Project 2/
 
 ---
 
-## 📋 Student Record Fields
+## Student Record Fields
 
 | Field | Type | Mandatory? | Description / Validation |
 |---|---|---|---|
@@ -70,11 +70,11 @@ EWB Project 2/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Prerequisites
 - **Python 3.10** or higher installed ([python.org](https://www.python.org/))
-- *(Optional for AI Extension)* [Ollama](https://ollama.com/) installed if testing natural language queries
+- *(Optional)* [Ollama](https://ollama.com/) if using local models instead of default g4f
 
 ### 2. Setup Virtual Environment (Recommended)
 
@@ -120,7 +120,7 @@ The application starts at: **`http://127.0.0.1:8000`**
 
 ---
 
-## 📡 API Endpoints & Testing Instructions
+## API Endpoints & Testing Instructions
 
 ### 1. Create a Student
 - **Method:** `POST`
@@ -218,7 +218,7 @@ curl -X DELETE "http://127.0.0.1:8000/students/STU-2001"
 
 You can use either **`g4f` (free cloud LLM, zero setup, no Ollama needed)** or **`ollama` (local LLM)**:
 
-#### Option A: Using `g4f` (Default - No Local Installation Needed!)
+#### Option A: Using `g4f` (Default - No Local Installation Needed)
 ```bash
 curl -X POST "http://127.0.0.1:8000/students/ai-query" \
   -H "Content-Type: application/json" \
@@ -250,9 +250,9 @@ curl -X POST "http://127.0.0.1:8000/students/ai-query" \
 
 ---
 
-## 🧪 Running Automated Tests
+## Running Automated Tests
 
-Run the comprehensive pytest test suite covering all 4 CRUD operations, validation rules, 404/409 error handling, and AI fallback:
+Run the comprehensive pytest test suite covering all 4 CRUD operations, validation rules, 404/409 error handling, and AI queries:
 
 ```bash
 python -m pytest -v
@@ -261,30 +261,31 @@ python -m pytest -v
 Expected output:
 ```text
 tests/test_api.py::test_root_endpoint PASSED                      [  5%]
-tests/test_api.py::test_health_check PASSED                       [ 11%]
-tests/test_api.py::test_create_student_with_id PASSED             [ 16%]
-tests/test_api.py::test_create_student_autogen_id PASSED          [ 22%]
-tests/test_api.py::test_create_duplicate_student_id PASSED        [ 27%]
-tests/test_api.py::test_create_student_validation_error PASSED    [ 33%]
-tests/test_api.py::test_get_all_students PASSED                   [ 38%]
-tests/test_api.py::test_get_student_by_id PASSED                  [ 44%]
-tests/test_api.py::test_get_student_not_found PASSED              [ 50%]
-tests/test_api.py::test_filter_students_by_course PASSED          [ 55%]
-tests/test_api.py::test_filter_students_by_dob PASSED             [ 61%]
-tests/test_api.py::test_search_students PASSED                    [ 66%]
-tests/test_api.py::test_update_student_put PASSED                 [ 72%]
-tests/test_api.py::test_update_student_patch PASSED               [ 77%]
-tests/test_api.py::test_update_student_not_found PASSED           [ 83%]
-tests/test_api.py::test_delete_student PASSED                     [ 88%]
-tests/test_api.py::test_delete_student_not_found PASSED           [ 94%]
-tests/test_api.py::test_ai_query_offline_graceful_handling PASSED [100%]
+tests/test_api.py::test_health_check PASSED                       [ 10%]
+tests/test_api.py::test_create_student_with_id PASSED             [ 15%]
+tests/test_api.py::test_create_student_autogen_id PASSED          [ 21%]
+tests/test_api.py::test_create_duplicate_student_id PASSED        [ 26%]
+tests/test_api.py::test_create_student_validation_error PASSED    [ 31%]
+tests/test_api.py::test_get_all_students PASSED                   [ 36%]
+tests/test_api.py::test_get_student_by_id PASSED                  [ 42%]
+tests/test_api.py::test_get_student_not_found PASSED              [ 47%]
+tests/test_api.py::test_filter_students_by_course PASSED          [ 52%]
+tests/test_api.py::test_filter_students_by_dob PASSED             [ 57%]
+tests/test_api.py::test_search_students PASSED                    [ 63%]
+tests/test_api.py::test_update_student_put PASSED                 [ 68%]
+tests/test_api.py::test_update_student_patch PASSED               [ 73%]
+tests/test_api.py::test_update_student_not_found PASSED           [ 78%]
+tests/test_api.py::test_delete_student PASSED                     [ 84%]
+tests/test_api.py::test_delete_student_not_found PASSED           [ 89%]
+tests/test_api.py::test_ai_query_offline_graceful_handling PASSED [ 94%]
+tests/test_api.py::test_ai_query_g4f_handling PASSED              [100%]
 
-============================= 18 passed in 4.85s ==============================
+============================= 19 passed in 4.75s ==============================
 ```
 
 ---
 
-## 🔒 Security & Data Integrity
+## Security & Data Integrity
 
 - **SQL Injection Prevention:** Uses parameterized queries (`?` and `:key` binding) for all database operations.
 - **AI Safety:** The LLM is never given SQL generation privileges or database access. Only sanitized records are provided to the model prompt as read-only context.
@@ -292,7 +293,7 @@ tests/test_api.py::test_ai_query_offline_graceful_handling PASSED [100%]
 
 ---
 
-## 🎓 Review Checklist Verification
+## Review Checklist Verification
 
 - [x] **Create:** Adds new student records with unique ID check (`POST /students`).
 - [x] **Read:** Lists all students, filters by course, DOB range, keyword search (`GET /students`), and retrieves single profile (`GET /students/{id}`).
@@ -301,4 +302,4 @@ tests/test_api.py::test_ai_query_offline_graceful_handling PASSED [100%]
 - [x] **Persistence:** Data persists across app restarts in SQLite (`data/students.db`).
 - [x] **Validation:** Pydantic models enforce email format, DOB format, phone number lengths, and required fields.
 - [x] **Documentation:** Fully documented OpenAPI (`/docs`), curl instructions, and reproducible setup.
-- [x] **Optional AI Extension:** Natural language Q&A grounded in retrieved records with Ollama.
+- [x] **Optional AI Extension:** Natural language Q&A grounded in retrieved records with g4f and Ollama.
